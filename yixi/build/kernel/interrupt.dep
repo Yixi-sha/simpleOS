@@ -1,0 +1,4 @@
+/home/winks/work/os/64/yixi/build/kernel/interrupt.o /home/winks/work/os/64/yixi/build/kernel/interrupt.dep : src/interrupt.c src/../inc/interrupt.h src/../inc/process.h \
+ src/../inc/lib.h src/../inc/mm.h src/../inc/cpu.h src/../inc/linkage.h \
+ src/../inc/lib.h src/../inc/printk.h src/../inc/linkage.h \
+ src/../inc/mm.h src/../inc/gate.h

@@ -1,0 +1,5 @@
+/home/winks/work/os/64/yixi/build/kernel/main.o /home/winks/work/os/64/yixi/build/kernel/main.dep : src/main.c src/../inc/printk.h src/../inc/linkage.h \
+ src/../inc/gate.h src/../inc/trap.h src/../inc/cpu.h \
+ src/../inc/interrupt.h src/../inc/process.h src/../inc/lib.h \
+ src/../inc/mm.h src/../inc/cpu.h src/../inc/mm.h src/../inc/process.h \
+ src/../inc/APIC.h src/../inc/keyboard.h src/../inc/disk.h

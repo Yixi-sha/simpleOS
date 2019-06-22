@@ -1,0 +1,3 @@
+/home/winks/work/os/64/yixi/build/kernel/printk.o /home/winks/work/os/64/yixi/build/kernel/printk.dep : src/printk.c src/../inc/lib.h src/../inc/printk.h \
+ src/../inc/linkage.h src/../inc/linkage.h src/../inc/mm.h \
+ src/../inc/lib.h
