@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "linkage.h": "c",
+        "interrupt.h": "c",
+        "printk.h": "c",
+        "lib.h": "c",
+        "memory.h": "c",
+        "gate.h": "c",
+        "process.h": "c",
+        "cpu.h": "c",
+        "8259a.h": "c",
+        "keyboard.h": "c"
+    }
+}
