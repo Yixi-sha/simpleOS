@@ -25,29 +25,33 @@ void disk_handler(unsigned long nr, unsigned long parameter, struct pt_regs * re
 		while(io_in8(PORT_DISK0_STATUS_CMD) & DISK_STATUS_BUSY);
 		color_printk(WHITE,BLACK,"Read One Sector Starting:%02x\n",io_in8(PORT_DISK0_STATUS_CMD));
 
-		io_out8(PORT_DISK0_DEVICE,0xe0);
+		io_out8(PORT_DISK0_DEVICE,0x40);
 
 		io_out8(PORT_DISK0_ERR_FEATURE,0);
-		io_out8(PORT_DISK0_SECTOR_CNT,1);
-		io_out8(PORT_DISK0_SECTOR_LOW,0x12);
+		io_out8(PORT_DISK0_SECTOR_CNT,0);
+		io_out8(PORT_DISK0_SECTOR_LOW,0x01);
 		io_out8(PORT_DISK0_SECTOR_MID,0);
 		io_out8(PORT_DISK0_SECTOR_HIGH,0);
 
-	
-	
+		io_out8(PORT_DISK0_ERR_FEATURE,0);
+		io_out8(PORT_DISK0_SECTOR_CNT,1);
+		io_out8(PORT_DISK0_SECTOR_LOW,0x78);
+		io_out8(PORT_DISK0_SECTOR_MID,0x56);
+		io_out8(PORT_DISK0_SECTOR_HIGH,0x34);
+
 		while(!(io_in8(PORT_DISK0_STATUS_CMD) & DISK_STATUS_READY));
 		color_printk(WHITE,BLACK,"Send CMD:%02x\n",io_in8(PORT_DISK0_STATUS_CMD));
 	
-		io_out8(PORT_DISK0_STATUS_CMD,0x20);	////read
+		io_out8(PORT_DISK0_STATUS_CMD,0x24);	////read
 	}
 	else
 	{
 		int i = 0;
-		unsigned char a[512];
-		port_insw(PORT_DISK0_DATA,&a,256);
+		unsigned char b[512];
+		port_insw(PORT_DISK0_DATA,&b,256);
 		color_printk(WHITE,BLACK,"Read One Sector Finished:%02x\n",io_in8(PORT_DISK0_STATUS_CMD));
 		for(i = 0;i<512;i++)
-			color_printk(WHITE,BLACK,"%02x ",a[i]);
+			color_printk(WHITE,BLACK,"%02x ",b[i]);
 	}
 	
 }
@@ -81,22 +85,28 @@ void disk_init()
 	}
 	color_printk(WHITE,BLACK,"Write One Sector Starting:%02x\n",io_in8(PORT_DISK0_STATUS_CMD));
 
-	io_out8(PORT_DISK0_DEVICE,0xe0);
+	io_out8(PORT_DISK0_DEVICE,0x40);
+
+	io_out8(PORT_DISK0_ERR_FEATURE,0);
+	io_out8(PORT_DISK0_SECTOR_CNT,0);
+	io_out8(PORT_DISK0_SECTOR_LOW,0x01);
+	io_out8(PORT_DISK0_SECTOR_MID,0x00);
+	io_out8(PORT_DISK0_SECTOR_HIGH,0x00);
+
 
 	io_out8(PORT_DISK0_ERR_FEATURE,0);
 	io_out8(PORT_DISK0_SECTOR_CNT,1);
-	io_out8(PORT_DISK0_SECTOR_LOW,0x12);
-	io_out8(PORT_DISK0_SECTOR_MID,0);
-	io_out8(PORT_DISK0_SECTOR_HIGH,0);
-
+	io_out8(PORT_DISK0_SECTOR_LOW,0x78);
+	io_out8(PORT_DISK0_SECTOR_MID,0x56);
+	io_out8(PORT_DISK0_SECTOR_HIGH,0x34);
 
 	while(!(io_in8(PORT_DISK0_STATUS_CMD) & DISK_STATUS_READY));
 	color_printk(WHITE,BLACK,"Send CMD:%02x\n",io_in8(PORT_DISK0_STATUS_CMD));
 
-	io_out8(PORT_DISK0_STATUS_CMD,0x30);	////write
+	io_out8(PORT_DISK0_STATUS_CMD,0x34);	////write
 	
 	while(!(io_in8(PORT_DISK0_STATUS_CMD) & DISK_STATUS_REQ));
-	memset(&a,0xA5,512);
+	memset(&a,0x78,512);
 	port_outsw(PORT_DISK0_DATA,&a,256);
 }
 
