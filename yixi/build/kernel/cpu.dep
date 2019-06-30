@@ -1,2 +1,0 @@
-/home/winks/work/os/64/yixi/build/kernel/cpu.o /home/winks/work/os/64/yixi/build/kernel/cpu.dep : src/cpu.c src/../inc/cpu.h src/../inc/printk.h \
- src/../inc/linkage.h

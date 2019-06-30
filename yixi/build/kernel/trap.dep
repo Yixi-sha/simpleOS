@@ -1,2 +1,0 @@
-/home/winks/work/os/64/yixi/build/kernel/trap.o /home/winks/work/os/64/yixi/build/kernel/trap.dep : src/trap.c src/../inc/trap.h src/../inc/printk.h \
- src/../inc/linkage.h src/../inc/gate.h

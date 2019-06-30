@@ -9,10 +9,12 @@
 #include "../inc/APIC.h"
 #include "../inc/keyboard.h"
 #include "../inc/disk.h"
+#include "../inc/block.h"
 //#include "../inc/8259A.h"
 
 extern struct slabCache kmallocCacheSize[16];
 extern struct Global_Memory_Descriptor mm_struct;
+extern struct BolckDeviceOperation IDEDeviceOperation;
 
 void Start_Kernel(void)
 {
@@ -70,9 +72,24 @@ void Start_Kernel(void)
 	APIC_IOAPIC_init();
 	keyboard_init();
 	//mouse_init();
+	color_printk(RED,BLACK,"disk init \n");
 	disk_init();
+	color_printk(RED,BLACK,"disk init end\n");
 	//task_init();
+	color_printk(PURPLE,BLACK,"disk write:\n");
+	char buf[512];
+	memset(buf,0x44,512);
+	IDEDeviceOperation.m_transfer(ATA_WRITE_CMD,0x02345678,1,(unsigned char *)buf);
 
+	color_printk(PURPLE,BLACK,"disk write end\n");
+
+	color_printk(PURPLE,BLACK,"disk read:\n");
+	memset(buf,0x00,512);
+	IDEDeviceOperation.m_transfer(ATA_READ_CMD,0x02345678,1,(unsigned char *)buf);
+	
+	for(i = 0 ;i < 512 ; i++)
+		color_printk(BLACK,WHITE,"%02x",buf[i]);
+	color_printk(PURPLE,BLACK,"\ndisk read end\n");
 	
     while(1){
 		if(!keyboard_exit_data())

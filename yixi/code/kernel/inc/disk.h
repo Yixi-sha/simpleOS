@@ -340,4 +340,40 @@ void disk_init();
 void disk_handler(unsigned long nr, unsigned long parameter, struct pt_regs * regs);
 void disk_exit();
 
+#define ATA_READ_CMD   0x24
+#define ATA_WRITE_CMD  0x34
+#define GET_IDENTIFY_DISK_CMD 0xEC
+
+struct BlockBufferNode
+{
+	unsigned int m_count;
+	unsigned char m_cmd;
+	unsigned long m_LBA;
+	unsigned char* m_buffer;
+
+	void (* m_end_handler)(unsigned long nr, unsigned long parameter);
+	struct List m_list;
+};
+
+struct RequestQueue
+{
+	struct List m_queueList;
+	struct BlockBufferNode *m_inUsing;
+	long  m_blockRequestCount;
+};
+
+long IDE_transfer(long cmd, unsigned long blocks, long count, unsigned char* buffer);
+long IDE_open();
+long IDE_close();
+long IDE_ioctl(long cmd,long arg);
+void read_handler(unsigned long nr, unsigned long parameter);
+void wirte_handler(unsigned long nr, unsigned long parameter);
+void other_handler(unsigned long nr, unsigned long parameter);
+void add_request(struct BlockBufferNode* node);
+void submit(struct BlockBufferNode* node);
+long cmd_out();
+void wait_for_finish();
+void end_request();
+struct BlockBufferNode* make_request(long cmd, unsigned long blocks, long count, unsigned char* buffer);
+
 #endif

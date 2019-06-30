@@ -1,1 +1,0 @@
-/home/winks/work/os/64/yixi/build/kernel/gate.o /home/winks/work/os/64/yixi/build/kernel/gate.dep : src/gate.c src/../inc/gate.h
