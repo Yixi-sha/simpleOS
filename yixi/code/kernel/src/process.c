@@ -81,7 +81,7 @@ inline void __switch_to(struct task_struct *prev,struct task_struct *next)
 
 	init_tss[0].rsp0 = next->thread->rsp0;
 
-	set_tss64(init_tss[0].rsp0, init_tss[0].rsp1, init_tss[0].rsp2, init_tss[0].ist1, init_tss[0].ist2, init_tss[0].ist3, init_tss[0].ist4, init_tss[0].ist5, init_tss[0].ist6, init_tss[0].ist7);
+	//set_tss64(init_tss[0].rsp0, init_tss[0].rsp1, init_tss[0].rsp2, init_tss[0].ist1, init_tss[0].ist2, init_tss[0].ist3, init_tss[0].ist4, init_tss[0].ist5, init_tss[0].ist6, init_tss[0].ist7);
 
 	__asm__ __volatile__("movq	%%fs,	%0 \n\t":"=a"(prev->thread->fs));
 	__asm__ __volatile__("movq	%%gs,	%0 \n\t":"=a"(prev->thread->gs));
@@ -107,7 +107,7 @@ void task_init()
     init_mm.brkEnd = mm_struct.brkEnd;
     init_mm.stackStart = _stack_start;
 
-    set_tss64(init_thread.rsp0, init_tss[0].rsp1, init_tss[0].rsp2, init_tss[0].ist1, init_tss[0].ist2, init_tss[0].ist3, init_tss[0].ist4, init_tss[0].ist5, init_tss[0].ist6, init_tss[0].ist7);
+    //set_tss64(,init_thread.rsp0, init_tss[0].rsp1, init_tss[0].rsp2, init_tss[0].ist1, init_tss[0].ist2, init_tss[0].ist3, init_tss[0].ist4, init_tss[0].ist5, init_tss[0].ist6, init_tss[0].ist7);
     list_init(&init_task_union.task.list);
     wrmsr(0x174, KERNEL_CS);
     wrmsr(0x175, current->thread->rsp0);

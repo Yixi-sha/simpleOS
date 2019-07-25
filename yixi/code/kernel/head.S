@@ -45,6 +45,11 @@ entry64:
 	movq	%rax,	%gs
 	movq	%rax,	%ss
 	movq	_stack_start(%rip),	%rsp		/* rsp address */
+
+	movq	$0x1b,	%rcx		//if APU
+	rdmsr
+	bt	$8,	%rax
+	jnc	start_smp
 	
 setup_IDT:							
 	leaq	ignore_int(%rip),	%rdx
@@ -97,6 +102,14 @@ setup_TSS64:
 
 go_to_kernel:
 	.quad	Start_Kernel
+
+start_smp:
+	movq	go_to_smp_kernel(%rip),	%rax		/* movq address */
+	pushq	$0x08
+	pushq	%rax
+	lretq
+go_to_smp_kernel:
+	.quad	Start_SMP
 
 ignore_int:
 	cld
@@ -230,7 +243,7 @@ GDT_Table:
 	.quad	0x0000f20000000000			/*6	USER	Data	64-bit	Segment	30*/
 	.quad	0x00cf9a000000ffff			/*7	KERNEL	Code	32-bit	Segment	38*/
 	.quad	0x00cf92000000ffff			/*8	KERNEL	Data	32-bit	Segment	40*/
-	.fill	10,8,0					/*10 ~ 11 TSS (jmp one segment <9>) in long-mode 128-bit 50*/
+	.fill	100,8,0					/*10 ~ 11 TSS (jmp one segment <9>) in long-mode 128-bit 50*/
 
 GDT_END:
 

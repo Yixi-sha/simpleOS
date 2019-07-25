@@ -52,8 +52,9 @@ inline void set_intr_gate(unsigned int n, unsigned char ist, void* addr);
 inline void set_trap_gate(unsigned int n, unsigned char ist, void* addr);
 inline void set_system_gate(unsigned int n, unsigned char ist, void* addr);
 inline void set_system_intr_gate(unsigned int n,unsigned char ist,void * addr);
-void set_tss64(unsigned long rsp0,unsigned long rsp1,unsigned long rsp2,unsigned long ist1,unsigned long ist2,unsigned long ist3, \
+void set_tss64(unsigned int * Table,unsigned long rsp0,unsigned long rsp1,unsigned long rsp2,unsigned long ist1,unsigned long ist2,unsigned long ist3,
 unsigned long ist4,unsigned long ist5,unsigned long ist6,unsigned long ist7);
+inline void set_tss_descriptor(unsigned int n,void * addr);
 
 
 #endif
