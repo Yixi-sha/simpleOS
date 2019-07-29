@@ -1,6 +1,7 @@
 #ifndef __LIB_H__
 #define __LIB_H__
 
+
 #define NULL 0
 
 #define container_of(ptr,type,member)							\
@@ -15,15 +16,9 @@
 #define nop() 		__asm__ __volatile__ ("nop	\n\t")
 #define io_mfence() 	__asm__ __volatile__ ("mfence	\n\t":::"memory")
 
-inline void wrmsr(unsigned long addrss, unsigned long value)
-{
-	__asm__ __volatile__(
-		"wrmsr   \n\t"
-		:
-		:"d"(value >> 32),"a"(value & 0xffffffff),"c"(addrss)
-		:"memory"
-	);
-}
+#define hlt() 		__asm__ __volatile__ ("hlt	\n\t")
+#define pause() 	__asm__ __volatile__ ("pause	\n\t")
+
 
 struct List
 {
@@ -177,8 +172,7 @@ inline char * strcpy(char * Dest,char * Src)
 					"jne	1b	\n\t"
 					:
 					:"S"(Src),"D"(Dest)
-					:
-					
+					:"ax","memory"
 				);
 	return 	Dest;
 }
@@ -202,7 +196,7 @@ inline char * strncpy(char * Dest,char * Src,long Count)
 					"2:	\n\t"
 					:
 					:"S"(Src),"D"(Dest),"c"(Count)
-					:					
+					:"ax","memory"				
 				);
 	return Dest;
 }
@@ -224,7 +218,7 @@ inline char * strcat(char * Dest,char * Src)
 					"jne	1b	\n\t"
 					:
 					:"S"(Src),"D"(Dest),"a"(0),"c"(0xffffffff)
-					:					
+					:"memory"				
 				);
 	return Dest;
 }
@@ -396,5 +390,20 @@ __asm__ __volatile__("cld;rep;insw;mfence;"::"d"(port),"D"(buffer),"c"(nr):"memo
 
 #define port_outsw(port,buffer,nr)	\
 __asm__ __volatile__("cld;rep;outsw;mfence;"::"d"(port),"S"(buffer),"c"(nr):"memory")
+
+inline unsigned long rdmsr(unsigned long address)
+{
+	unsigned int tmp0 = 0;
+	unsigned int tmp1 = 0;
+	__asm__ __volatile__("rdmsr	\n\t":"=d"(tmp0),"=a"(tmp1):"c"(address):"memory");	
+	return (unsigned long)tmp0<<32 | tmp1;
+}
+
+inline void wrmsr(unsigned long address,unsigned long value)
+{
+	__asm__ __volatile__("wrmsr	\n\t"::"d"(value >> 32),"a"(value & 0xffffffff),"c"(address):"memory");	
+}
+
+
 
 #endif

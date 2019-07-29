@@ -3,6 +3,9 @@
 #include "../inc/printk.h"
 #include "../inc/linkage.h"
 #include "../inc/mm.h"
+#include "../inc/spinLock.h"
+
+spinLock_T printLock;
 
 unsigned char font_ascii[256][16]=
 {
@@ -594,6 +597,7 @@ int color_printk(unsigned int FRcolor,unsigned int BKcolor,const char * fmt,...)
 {
    	int i = 0;
 	va_list args;
+	spin_lock(&printLock);
 	va_start(args, fmt);
 
 	i = vsprintf(buf,fmt, args);
@@ -608,13 +612,13 @@ int printk(const char * fmt,...)
 {
 	int i = 0;
 	va_list args;
+	spin_lock(&printLock);
 	va_start(args, fmt);
 
 	i = vsprintf(buf,fmt, args);
 
 	va_end(args);
 
-	
 	return inter_print(i, WHITE, BLACK);
 }
 
@@ -674,6 +678,7 @@ int inter_print(int i,unsigned int FRcolor,unsigned int BKcolor)
 		}
 		posChange();
 	}
+	spin_unlock(&printLock);
 	return i;
 }
 
@@ -697,6 +702,8 @@ void posChange(void)
 
 void printkInit(void)
 {
+	spin_init(&printLock);
+
     Pos.XResolution = 1024;
 	Pos.YResolution = 768;
 

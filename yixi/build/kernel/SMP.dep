@@ -1,0 +1,5 @@
+/home/winks/work/os/64/yixi/build/kernel/SMP.o /home/winks/work/os/64/yixi/build/kernel/SMP.dep : src/SMP.c src/../inc/SMP.h src/../inc/cpu.h src/../inc/printk.h \
+ src/../inc/linkage.h src/../inc/lib.h src/../inc/process.h \
+ src/../inc/lib.h src/../inc/mm.h src/../inc/cpu.h src/../inc/gate.h \
+ src/../inc/APIC.h src/../inc/process.h src/../inc/mm.h \
+ src/../inc/interrupt.h src/../inc/spinLock.h

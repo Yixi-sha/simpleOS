@@ -1,0 +1,1 @@
+/home/winks/work/os/64/yixi/build/kernel/block.o /home/winks/work/os/64/yixi/build/kernel/block.dep : src/block.c src/../inc/block.h

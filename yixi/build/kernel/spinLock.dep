@@ -1,0 +1,1 @@
+/home/winks/work/os/64/yixi/build/kernel/spinLock.o /home/winks/work/os/64/yixi/build/kernel/spinLock.dep : src/spinLock.c src/../inc/spinLock.h

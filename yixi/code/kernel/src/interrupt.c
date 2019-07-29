@@ -5,6 +5,7 @@
 #include "../inc/mm.h"
 #include "../inc/gate.h"
 #include "../inc/interrupt.h"
+#include "../inc/printk.h"
 
 
 
@@ -32,6 +33,20 @@ Build_IRQ(0x34)
 Build_IRQ(0x35)
 Build_IRQ(0x36)
 Build_IRQ(0x37)
+
+
+
+
+Build_IRQ(0xc8)
+Build_IRQ(0xc9)
+Build_IRQ(0xca)
+Build_IRQ(0xcb)
+Build_IRQ(0xcc)
+Build_IRQ(0xcd)
+Build_IRQ(0xce)
+Build_IRQ(0xcf)
+Build_IRQ(0xd0)
+Build_IRQ(0xd1)
 
 void (* interrupt[24])(void)=
 {
@@ -61,18 +76,48 @@ void (* interrupt[24])(void)=
 	IRQ0x37_interrupt,
 };
 
+void (* SMP_interrupt[10])(void)=
+{
+	IRQ0xc8_interrupt,
+	IRQ0xc9_interrupt,
+	IRQ0xca_interrupt,
+	IRQ0xcb_interrupt,
+	IRQ0xcc_interrupt,
+	IRQ0xcd_interrupt,
+	IRQ0xce_interrupt,
+	IRQ0xcf_interrupt,
+	IRQ0xd0_interrupt,
+	IRQ0xd1_interrupt,
+};
+
 irq_desc_T interrupt_desc[NR_IRQS] = {0};
+
+irq_desc_T SMP_IPI_desc[10] ;
 
 void do_IRQ(struct pt_regs * regs,unsigned long nr)	//regs:rsp,nr
 {
-	unsigned char x;
-	//printk("doirq");
-	irq_desc_T* irq = &interrupt_desc[nr -32];
-	if(irq->handler != NULL)
-		irq->handler(nr, irq->parament, regs);
+	irq_desc_T* irq = NULL;
+	switch (nr & 0x80)
+	{
+		case 0x00 :
+
+			irq = &interrupt_desc[nr -32];
+			if(irq->handler != NULL)
+				irq->handler(nr, irq->parament, regs);
+			if(irq->controller != NULL && irq->controller->ack != NULL)
+				irq->controller->ack(nr);
+			break;
+	 	
+		case 0x80 :
+			color_printk(RED, BLACK, "SMP IPI : %d\n", nr);
+			Local_APIC_edge_level_ack(nr);
+			break;
+
+		default:
+			color_printk(RED, BLACK, "do_IRQ receive nr is : %d\n", nr);
+			break;
+	}
 	
-	if(irq->controller != NULL && irq->controller->ack != NULL)
-		irq->controller->ack(nr);
 	
 }
 

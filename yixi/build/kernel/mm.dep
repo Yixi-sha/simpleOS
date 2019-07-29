@@ -1,0 +1,2 @@
+/home/winks/work/os/64/yixi/build/kernel/mm.o /home/winks/work/os/64/yixi/build/kernel/mm.dep : src/mm.c src/../inc/mm.h src/../inc/lib.h src/../inc/lib.h \
+ src/../inc/printk.h src/../inc/linkage.h

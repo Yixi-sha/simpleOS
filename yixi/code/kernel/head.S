@@ -1,39 +1,43 @@
 #include "inc/linkage.h"
+
 .section .text
 
 ENTRY(_start)
-	mov $0x10, %ax
-	mov %ax, %dx
-	mov %ax, %es 
-	mov	%ax, %fs
-	mov	%ax, %ss
-	mov	$0x7E00, %esp
 
-	// load GDTR
+	mov	$0x10,	%ax
+	mov	%ax,	%ds
+	mov	%ax,	%es
+	mov	%ax,	%fs
+	mov	%ax,	%ss
+	mov	$0x7E00,	%esp
 
-	lgdt GDT_POINTER(%rip)
+//=======	load GDTR
 
-	// load IDTR
+	lgdt	GDT_POINTER(%rip)
 
-	lidt IDT_POINTER(%rip)
+//=======	load	IDTR
 
-	mov $0x10, %ax
-	mov %ax, %dx
-	mov %ax, %es 
-	mov	%ax, %fs
-	mov	%ax, %ss
-	mov	$0x7E00, %esp
+	lidt	IDT_POINTER(%rip)
 
-	// load cr3
+	mov	$0x10,	%ax
+	mov	%ax,	%ds
+	mov	%ax,	%es
+	mov	%ax,	%fs
+	mov	%ax,	%gs
+	mov	%ax,	%ss
 
-	movq $0x101000, %rax
-	movq %rax, %cr3
-	movq switch_seg(%rip), %rax
+	movq	_stack_start(%rip),	%rsp
+
+//=======	load	cr3
+
+	movq	$0x101000,	%rax
+	movq	%rax,		%cr3
+	movq	switch_seg(%rip),	%rax
 	pushq	$0x08
 	pushq	%rax
 	lretq
 
-	// 64-bit mode code 
+//=======	64-bit mode code
 
 switch_seg:
 	.quad	entry64
@@ -45,7 +49,12 @@ entry64:
 	movq	%rax,	%gs
 	movq	%rax,	%ss
 	movq	_stack_start(%rip),	%rsp		/* rsp address */
-	
+
+	movq	$0x1b,	%rcx		//if APU
+	rdmsr
+	bt	$8,	%rax
+	jnc	start_smp
+
 setup_IDT:							
 	leaq	ignore_int(%rip),	%rdx
 	movq	$(0x08 << 16),	%rax
@@ -87,7 +96,7 @@ setup_TSS64:
 	shrq	$32,	%rdx
 	movq	%rdx,	88(%rdi)	//tss+1 segment offset
 
-//	mov	$0x40,	%ax
+//	mov	$0x50,	%ax
 //	ltr	%ax
 
 	movq	go_to_kernel(%rip),	%rax		/* movq address */
@@ -98,79 +107,104 @@ setup_TSS64:
 go_to_kernel:
 	.quad	Start_Kernel
 
+start_smp:
+	movq	go_to_smp_kernel(%rip),	%rax		/* movq address */
+	pushq	$0x08
+	pushq	%rax
+	lretq
+
+go_to_smp_kernel:
+	.quad	Start_SMP
+
+
+//=======	ignore_int
+
 ignore_int:
 	cld
-	pushq %rax
-	pushq %rbx
-	pushq %rcx
-	pushq %rdx
-	pushq %rbp
-	pushq %rdi
-	pushq %rsi
+	pushq	%rax
+	pushq	%rbx
+	pushq	%rcx
+	pushq	%rdx
+	pushq	%rbp
+	pushq	%rdi
+	pushq	%rsi
 
-	pushq %r8
-	pushq %r9
-	pushq %r10
-	pushq %r11
-	pushq %r12
-	pushq %r13
-	pushq %r14
-	pushq %r15
+	pushq	%r8
+	pushq	%r9
+	pushq	%r10
+	pushq	%r11
+	pushq	%r12
+	pushq	%r13
+	pushq	%r14
+	pushq	%r15
 
-	movq $0x10, %rax
-	movq %rax, %ds
-	movq %rax, %es
+	movq	%es,	%rax
+	pushq	%rax
+	movq	%ds,	%rax
+	pushq	%rax
 
-	leaq int_msg(%rip), %rdx
-	movq $0x00000000, %rsi
-	movq $0x00ff0000, %rdi
-	movq $0,	%rax
-	callq color_printk
+	movq	$0x10,	%rax
+	movq	%rax,	%ds
+	movq	%rax,	%es
 
-loop:
+	leaq	int_msg(%rip),	%rax			/* leaq get address */
+	pushq	%rax
+	movq	%rax,	%rdx
+	movq	$0x00000000,	%rsi
+	movq	$0x00ff0000,	%rdi
+	movq	$0,	%rax
+	callq	color_printk
+	addq	$0x8,	%rsp
 
-	jmp loop
+Loop:
+	jmp	Loop	
 
+	popq	%rax
+	movq	%rax,	%ds
+	popq	%rax
+	movq	%rax,	%es
 
-	popq %r15
-	popq %r14
-	popq %r13
-	popq %r12
-	popq %r11
-	popq %r10
-	popq %r9
-	popq %r8
+	popq	%r15
+	popq	%r14
+	popq	%r13
+	popq	%r12
+	popq	%r11
+	popq	%r10
+	popq	%r9
+	popq	%r8
 
-	popq %rsi
-	popq %rdi
-	popq %rbp
-	popq %rdx
-	popq %rcx
-	popq %rbx
-	popq %rax
-
+	popq	%rsi
+	popq	%rdi
+	popq	%rbp
+	popq	%rdx
+	popq	%rcx
+	popq	%rbx
+	popq	%rax
 	iretq
+
+int_msg:
+	.asciz "Unknown interrupt or fault at RIP\n"
 
 ENTRY(_stack_start)
 	.quad	init_task_union + 32768
 
-//	init page
+//=======	init page
 .align 8
 
 .org	0x1000
 
-__PML4E:     
+__PML4E:
 
-	.quad	0x102003 // 0x00 
+	.quad	0x102003
 	.fill	255,8,0
-	.quad	0x102003 
+	.quad	0x102003
 	.fill	255,8,0
 
 .org	0x2000
 
 __PDPTE:
 	
-	.quad	0x103003
+	.quad	0x103003	/* 0x103003 */
 	.fill	511,8,0
 
 .org	0x3000
@@ -204,7 +238,7 @@ __PDE:
 
 
 
-	.quad	0xe0000083		/*0x 3000000  e8  e0*/
+	.quad	0xe0000083		/*0x 3000000*/
 	.quad	0xe0200083
 	.quad	0xe0400083
 	.quad	0xe0600083
@@ -212,12 +246,12 @@ __PDE:
 	.quad	0xe0a00083
 	.quad	0xe0c00083
 	.quad	0xe0e00083
-	.fill	499,8,0
+	.fill	480,8,0
 
-//	GDT_Table
+//=======	GDT_Table
 
 .section .data
-// GDT_Table
+
 .globl GDT_Table
 
 GDT_Table:
@@ -230,15 +264,14 @@ GDT_Table:
 	.quad	0x0000f20000000000			/*6	USER	Data	64-bit	Segment	30*/
 	.quad	0x00cf9a000000ffff			/*7	KERNEL	Code	32-bit	Segment	38*/
 	.quad	0x00cf92000000ffff			/*8	KERNEL	Data	32-bit	Segment	40*/
-	.fill	10,8,0					/*10 ~ 11 TSS (jmp one segment <9>) in long-mode 128-bit 50*/
-
+	.fill	100,8,0					/*10 ~ 11 TSS (jmp one segment <9>) in long-mode 128-bit 50*/
 GDT_END:
 
 GDT_POINTER:
 GDT_LIMIT:	.word	GDT_END - GDT_Table - 1
 GDT_BASE:	.quad	GDT_Table
 
-// IDT_Table
+//=======	IDT_Table
 
 .globl IDT_Table
 
@@ -250,18 +283,10 @@ IDT_POINTER:
 IDT_LIMIT:	.word	IDT_END - IDT_Table - 1
 IDT_BASE:	.quad	IDT_Table
 
-
-//	TSS64_Table
+//=======	TSS64_Table
 
 .globl	TSS64_Table
 
 TSS64_Table:
 	.fill  13,8,0
 TSS64_END:
-
-TSS64_POINTER:
-TSS64_LIMIT:	.word	TSS64_END - TSS64_Table - 1
-TSS64_BASE:	.quad	TSS64_Table
-
-int_msg:
-	.asciz "Unknow interrupt or fault at RIP\n"

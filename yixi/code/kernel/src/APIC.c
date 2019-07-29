@@ -370,3 +370,13 @@ void IOAPIC_edge_ack(unsigned long irq)
 				"wrmsr	\n\t"
 				:::"memory");
 }
+
+
+void Local_APIC_edge_level_ack(unsigned long irq)
+{
+	__asm__ __volatile__(	"movq	$0x00,	%%rdx	\n\t"
+				"movq	$0x00,	%%rax	\n\t"
+				"movq 	$0x80b,	%%rcx	\n\t"
+				"wrmsr	\n\t"
+				:::"memory");
+}

@@ -141,10 +141,10 @@ void init_memory()
     color_printk(INDIGO,BLACK,"Global_CR3\t:%p\n",GlobalCR3);
 	color_printk(INDIGO,BLACK,"*Global_CR3\t:%p\n",*Phy_To_Virt(GlobalCR3) & (~0xff));
 	color_printk(PURPLE,BLACK,"**Global_CR3\t:%p\n",*Phy_To_Virt(*Phy_To_Virt(GlobalCR3) & (~0xff)) & (~0xff));
-    for(i = 0; i < 10; i++)
+    /* for(i = 0; i < 10; i++)
     {
         *(Phy_To_Virt(GlobalCR3) + i) = 0UL;
-    }
+    }*/
     updateTlb();
     color_printk(INDIGO,BLACK,"&mm_struct is\t:%p\n",&mm_struct);
 

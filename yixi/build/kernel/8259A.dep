@@ -1,0 +1,3 @@
+/home/winks/work/os/64/yixi/build/kernel/8259A.o /home/winks/work/os/64/yixi/build/kernel/8259A.dep : src/8259A.c src/../inc/8259A.h src/../inc/linkage.h \
+ src/../inc/printk.h src/../inc/linkage.h src/../inc/lib.h \
+ src/../inc/gate.h

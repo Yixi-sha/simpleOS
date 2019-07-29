@@ -2,11 +2,12 @@
 #include "../inc/printk.h"
 #include "../inc/gate.h"
 
-
+extern unsigned int TSS64_Table[26]; 
+extern unsigned long _stack_start;
 void trap_init()
 {
     load_TR(10);
-	set_tss64(0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00);
+	set_tss64(TSS64_Table,_stack_start, _stack_start, _stack_start, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00, 0xffff800000007c00);
 }
 
 void sys_vector_init()

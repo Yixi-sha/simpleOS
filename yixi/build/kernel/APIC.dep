@@ -1,0 +1,4 @@
+/home/winks/work/os/64/yixi/build/kernel/APIC.o /home/winks/work/os/64/yixi/build/kernel/APIC.dep : src/APIC.c src/../inc/APIC.h src/../inc/process.h \
+ src/../inc/lib.h src/../inc/mm.h src/../inc/cpu.h src/../inc/cpu.h \
+ src/../inc/lib.h src/../inc/printk.h src/../inc/linkage.h \
+ src/../inc/interrupt.h src/../inc/gate.h src/../inc/mm.h
