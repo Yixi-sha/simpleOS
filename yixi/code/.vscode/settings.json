@@ -9,6 +9,9 @@
         "process.h": "c",
         "cpu.h": "c",
         "8259a.h": "c",
-        "keyboard.h": "c"
+        "keyboard.h": "c",
+        "time.h": "c",
+        "hpet.h": "c",
+        "apic.h": "c"
     }
 }

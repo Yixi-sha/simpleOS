@@ -1,0 +1,2 @@
+/home/winks/work/os/64/yixi/build/kernel/softIrq.o /home/winks/work/os/64/yixi/build/kernel/softIrq.dep : src/softIrq.c src/../inc/softIrq.h src/../inc/mm.h \
+ src/../inc/lib.h

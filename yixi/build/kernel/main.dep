@@ -3,4 +3,5 @@
  src/../inc/interrupt.h src/../inc/process.h src/../inc/lib.h \
  src/../inc/mm.h src/../inc/cpu.h src/../inc/mm.h src/../inc/process.h \
  src/../inc/APIC.h src/../inc/keyboard.h src/../inc/disk.h \
- src/../inc/block.h src/../inc/SMP.h
+ src/../inc/block.h src/../inc/SMP.h src/../inc/time.h src/../inc/HPET.h \
+ src/../inc/softIrq.h

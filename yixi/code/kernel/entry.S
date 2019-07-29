@@ -115,8 +115,14 @@ RESTORE_ALL:
 ret_from_exception:
 	/*GET_CURRENT(%ebx)	need rewrite*/
 ENTRY(ret_from_intr)
+	movq	$-1, %rcx
+	testq	softIrqStatus(%rip), %rcx
+	jnz	softIrq_handler
 	jmp	RESTORE_ALL	/*need rewrite*/
 
+softIrq_handler :
+	callq	do_softIrq
+	jmp	RESTORE_ALL
 
 ENTRY(divide_error)
 	pushq	$0

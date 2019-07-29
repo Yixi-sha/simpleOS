@@ -12,10 +12,15 @@
 #include "../inc/block.h"
 //#include "../inc/8259A.h"
 #include "../inc/SMP.h"
+#include "../inc/time.h"
+#include "../inc/HPET.h"
+#include "../inc/softIrq.h"
 
 extern struct slabCache kmallocCacheSize[16];
 extern struct Global_Memory_Descriptor mm_struct;
 extern struct BolckDeviceOperation IDEDeviceOperation;
+extern unsigned long _stack_start;
+extern struct  time time;
 
 void Start_Kernel(void)
 {
@@ -71,14 +76,18 @@ void Start_Kernel(void)
 	frame_buffer_init();
 	pagetable_init();
 	APIC_IOAPIC_init();
+	softIrq_init();
+	
 	keyboard_init();
 	//mouse_init();
 	color_printk(RED,BLACK,"disk init \n");
 	disk_init();
 	color_printk(RED,BLACK,"disk init end\n");
 	//task_init();
-	SMP_init();
 	
+	SMP_init();
+	timer_init();
+	HPET_init();
     while(1){
 		if(!keyboard_exit_data())
         	analysis_keycode();

@@ -4,6 +4,7 @@
 #include "../inc/linkage.h"
 #include "../inc/mm.h"
 #include "../inc/spinLock.h"
+#include "../inc/lib.h"
 
 spinLock_T printLock;
 
@@ -324,6 +325,7 @@ unsigned char font_ascii[256][16]=
 struct position Pos;
 char buf[4096]={0};
 
+
 void putchar(unsigned char * fb,int Xsize,int x,int y,unsigned int FRcolor,unsigned int BKcolor,unsigned char font)
 {
     int i = 0,j = 0;
@@ -593,10 +595,14 @@ int vsprintf(char * buf,const char *fmt, va_list args)
     return str - buf;
 }
 
+unsigned char printFlagIrq = 0;
+
 int color_printk(unsigned int FRcolor,unsigned int BKcolor,const char * fmt,...)
 {
    	int i = 0;
 	va_list args;
+	if(printFlagIrq)
+		cli();
 	spin_lock(&printLock);
 	va_start(args, fmt);
 
@@ -612,6 +618,8 @@ int printk(const char * fmt,...)
 {
 	int i = 0;
 	va_list args;
+	if(printFlagIrq)
+		cli();
 	spin_lock(&printLock);
 	va_start(args, fmt);
 
@@ -679,6 +687,8 @@ int inter_print(int i,unsigned int FRcolor,unsigned int BKcolor)
 		posChange();
 	}
 	spin_unlock(&printLock);
+	if(printFlagIrq)
+		sti();
 	return i;
 }
 
