@@ -42,8 +42,9 @@ void do_softIrq()
     {
         if(softIrqStatus & (1 << i))
         {
-            softIrqVector[i].m_action(softIrqVector[i].m_data);
             softIrqStatus &= ~(1 << i);
+            if(softIrqVector[i].m_action != NULL)
+                softIrqVector[i].m_action(softIrqVector[i].m_data);
         }
     }
     cli();

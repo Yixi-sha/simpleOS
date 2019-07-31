@@ -19,12 +19,11 @@ hw_int_controller HPET_int_controller =
 };
 
 volatile unsigned long jiffies = 0;
-
+extern struct timerList* timerListHead ;
 void HPET_handler(unsigned long nr, unsigned long parameter, struct pt_regs * regs)
 {
 	jiffies++;
-	if(jiffies%100 == 0)
-		//color_printk(RED, BLACK, "(HPET:%ld)",jiffies);
+	if((jiffies % 10 == 0) && timerListHead != NULL && timerListHead->m_expierJiffies <= jiffies)
     	set_softIrq_status(TIMER_SIRQ);
 }
 

@@ -1,6 +1,7 @@
 #ifndef __TIME_H__
-
 #define __TIME_H__
+
+#include "lib.h"
 
 struct time
 {
@@ -22,5 +23,19 @@ io_in8(0x71); \
 int get_cmos_time(struct time *time);
 void do_timer();
 void timer_init();
+
+
+struct timerList
+{
+	struct List m_list;
+	unsigned long m_expierJiffies;
+	void (*m_func)(void* data);
+	void *m_data;
+};
+void init_sys_timer(struct timerList* timer, void (*func)(void* data),\
+	void* data, unsigned long expierJiffies);
+void add_sys_timer(struct timerList* timer);
+void del_timer(struct timerList* timer);
+
 
 #endif

@@ -60,7 +60,7 @@ __res; })
 static char * number(char * str, long num, int base, int flag, int size, int precision);
 int vsprintf(char * buf,const char *fmt, va_list args);
 int color_printk(unsigned int FRcolor,unsigned int BKcolor,const char * fmt,...);
-int inter_print(int i,unsigned int FRcolor,unsigned int BKcolor);
+int inter_print(unsigned char* buf, int i,unsigned int FRcolor,unsigned int BKcolor);
 void printkInit(void);
 void posChange(void);
 int printk(const char * fmt,...);

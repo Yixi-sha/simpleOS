@@ -323,7 +323,7 @@ unsigned char font_ascii[256][16]=
 };
 
 struct position Pos;
-char buf[4096]={0};
+
 
 
 void putchar(unsigned char * fb,int Xsize,int x,int y,unsigned int FRcolor,unsigned int BKcolor,unsigned char font)
@@ -601,6 +601,7 @@ int color_printk(unsigned int FRcolor,unsigned int BKcolor,const char * fmt,...)
 {
    	int i = 0;
 	va_list args;
+	char buf[4096]={0};
 	if(printFlagIrq)
 		cli();
 	spin_lock(&printLock);
@@ -611,13 +612,14 @@ int color_printk(unsigned int FRcolor,unsigned int BKcolor,const char * fmt,...)
 	va_end(args);
 
 	
-	return inter_print(i, FRcolor, BKcolor);
+	return inter_print(&buf, i, FRcolor, BKcolor);
 }
 
 int printk(const char * fmt,...)
 {
 	int i = 0;
 	va_list args;
+	char buf[4096]={0};
 	if(printFlagIrq)
 		cli();
 	spin_lock(&printLock);
@@ -627,7 +629,7 @@ int printk(const char * fmt,...)
 
 	va_end(args);
 
-	return inter_print(i, WHITE, BLACK);
+	return inter_print(&buf,i, WHITE, BLACK);
 }
 
 void clear_line(unsigned char * fb,int Xsize,int y)
@@ -642,7 +644,7 @@ void clear_line(unsigned char * fb,int Xsize,int y)
 	
 }
 
-int inter_print(int i,unsigned int FRcolor,unsigned int BKcolor)
+int inter_print(unsigned char* buf, int i,unsigned int FRcolor,unsigned int BKcolor)
 {
 	int count = 0;
 	int line = 0;
